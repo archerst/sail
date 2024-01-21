@@ -4,6 +4,7 @@ import 'package:sail/router/application.dart';
 import 'package:sail/router/routers.dart';
 import 'package:sail/utils/common_util.dart';
 import 'package:sail/utils/shared_preferences_util.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class HttpUtil {
   static HttpUtil get instance => _httpUtil;
@@ -17,14 +18,13 @@ class HttpUtil {
     );
     dio = Dio(options);
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) async {
-      print("========================请求数据===================");
-      print("url=${options.uri.toString()}");
-      print("headers=${options.headers}");
-      print("params=${options.data}");
 
       //如果token存在在请求参数加上token
       await SharedPreferencesUtil.getInstance()?.getString(AppStrings.token).then((token) {
         if (token != null) {
+          final headers = <String, String>{
+            "Authorization": "Bearer $token"};
+          options.headers.addEntries(headers.entries);
           options.queryParameters[AppStrings.token] = token;
           print("token=$token");
         }
@@ -38,10 +38,25 @@ class HttpUtil {
         }
       });
 
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      await deviceInfo.iosInfo.then((value) {
+        final headers = <String, String>{
+        "did": value.identifierForVendor??'unknown', 
+        "dm": value.model,
+        "dt": value.utsname.machine};
+        options.headers.addEntries(headers.entries);
+      });
+
+
+      print("========================请求数据===================");
+      print("url=${options.uri.toString()}");
+      print("headers=${options.headers}");
+      print("params=${options.data}");
       return handler.next(options);
     }, onResponse: (response, handler) {
-      print("========================请求数据===================");
+      print("========================返回数据===================");
       print("code=${response.statusCode}");
+      print("content=${response.data}");
 
       if (response.statusCode! < 200 || response.statusCode! >= 300) {
         if (response.statusCode == 403) {

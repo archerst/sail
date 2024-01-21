@@ -19,7 +19,7 @@ class LoginEntity {
 
   factory LoginEntity.fromMap(Map<String, dynamic> json) => LoginEntity(
     token: json["token"],
-    authData: json["auth_data"],
+    authData: json["token"],
   );
 
   Map<String, dynamic> toMap() => {

@@ -7,6 +7,8 @@ import 'package:sail/entity/user_subscribe_entity.dart';
 import 'package:sail/models/app_model.dart';
 import 'package:sail/utils/transfer_util.dart';
 
+import '../utils/navigator_util.dart';
+
 class MySubscribe extends StatefulWidget {
   const MySubscribe({Key? key, required this.isLogin, required this.isOn, required this.userSubscribeEntity})
       : super(key: key);
@@ -76,18 +78,30 @@ class MySubscribeState extends State<MySubscribe> {
         color: widget.isOn ? Colors.white : AppColors.darkSurfaceColor,
         child: Container(
           alignment: Alignment.center,
-          child: Text(
-            !widget.isLogin ? '请先登陆' : '请先订阅下方套餐',
-            style: TextStyle(
+          child: GestureDetector(
+            onTap: () => _onTap(),
+            child: Text(
+              !widget.isLogin ? '请先登陆' : '请先订阅下方套餐',
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: ScreenUtil().setWidth(40),
                 color: widget.isOn ? Colors.black : Colors.white),
-          ),
+                ),
+            ),
         ),
       ),
     );
   }
 
+  _onTap(){
+    if (!widget.isLogin){
+      print("login");
+      NavigatorUtil.goLogin(context);
+    } else{
+      print("subscribe");
+      NavigatorUtil.goPlan(context);
+    }
+  }
   Widget _timeOutWidget() {
     return Container(
       width: ScreenUtil().setWidth(1080),

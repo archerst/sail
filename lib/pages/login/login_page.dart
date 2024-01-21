@@ -43,6 +43,7 @@ class LoginPageState extends State<LoginPage> {
     try {
       await _loginModel.login(data.name, data.password);
     } catch (error) {
+      print(error);
       result = '登陆失败，请重试';
     }
 

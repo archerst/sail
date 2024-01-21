@@ -8,7 +8,7 @@
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.sail-tunnel.sail</string>
+		<string>group.com.xlnt.vpn</string>
 	</array>
 </dict>
 </plist>
