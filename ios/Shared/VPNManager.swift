@@ -46,9 +46,12 @@ public class VPNManager {
 
             if managers.count == 0 {
                 let newManager = NETunnelProviderManager()
-                newManager.protocolConfiguration = NETunnelProviderProtocol()
-                newManager.localizedDescription = "Sail"
-                newManager.protocolConfiguration?.serverAddress = "iLeaf"
+                let proto = NETunnelProviderProtocol()
+                
+                newManager.localizedDescription = "Xlnt"
+                proto.serverAddress = "192.168.0.1:9999"
+                proto.providerBundleIdentifier = "com.xlnt.vpn.packettunnel"
+                newManager.protocolConfiguration = proto
                 newManager.saveToPreferences { error in
                     guard error == nil else {
                         completion(error)
@@ -63,10 +66,12 @@ public class VPNManager {
                 self.manager = managers[0]
                 completion(nil)
             }
+            print("loadVPNPreference \(self.manager.protocolConfiguration.debugDescription)")
         }
     }
 
     public func enableVPNManager(completion: @escaping (Error?) -> Void) {
+        print("enableVPNManager")
         manager.isEnabled = true
         manager.saveToPreferences { error in
             guard error == nil else {
@@ -81,11 +86,14 @@ public class VPNManager {
 
     public func toggleVPNConnection(completion: @escaping (Error?) -> Void) {
         if self.manager.connection.status == .disconnected || self.manager.connection.status == .invalid {
+            print("toggleVPNConnection")
             do {
                 try self.manager.connection.startVPNTunnel()
             } catch {
+                print("toggleVPNConnection err: \(error.localizedDescription)")
                 completion(error)
             }
+            print("toggleVPNConnection done")
         } else {
             self.manager.connection.stopVPNTunnel()
         }

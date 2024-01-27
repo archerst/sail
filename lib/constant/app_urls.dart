@@ -4,10 +4,10 @@ class AppUrls {
 
   static const String login = '$baseApiUrl/user/signin';
   static const String register = '$baseApiUrl/user/signup';
-  static const String getQuickLoginUrl = '$baseApiUrl/passport/auth/getQuickLoginUrl';
+  static const String getQuickLoginUrl = '$baseApiUrl/user/auth';
 
-  static const String userSubscribe = '$baseApiUrl/user/getSubscribe';
+  static const String userSubscribe = '$baseApiUrl/sub';
   static const String plan = '$baseApiUrl/plan';
-  static const String server = '$baseApiUrl/user/server/fetch';
+  static const String server = '$baseApiUrl/server';
   static const String userInfo = '$baseApiUrl/user/profile';
 }

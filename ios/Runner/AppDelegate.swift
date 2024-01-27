@@ -15,8 +15,11 @@ import os
     let vpnManagerChannel = FlutterMethodChannel.init(name: "com.sail_tunnel.sail/vpn_manager",
                                                    binaryMessenger: controller.binaryMessenger);
     let manager = VPNManager.shared()
-
-    vpnManagerChannel.setMethodCallHandler({
+      
+    let status = manager.getStatus()
+    print("status: \(status.description)")
+    
+      vpnManagerChannel.setMethodCallHandler({
         (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
 
         switch call.method {

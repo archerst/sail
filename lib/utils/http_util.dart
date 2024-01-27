@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:sail/constant/app_strings.dart';
 import 'package:sail/router/application.dart';
@@ -89,7 +91,8 @@ class HttpUtil {
     } else {
       response = await dio.get(url);
     }
-    return response.data;
+    print("get data: ${jsonDecode(response.data)['data']}");
+    return jsonDecode(response.data);
   }
 
   //post请求

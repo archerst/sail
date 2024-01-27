@@ -8,6 +8,7 @@
 import Foundation
 import NetworkExtension
 import LeafFFI
+import os
 
 public enum LeafAdapterError: Error {
     /// Failure to locate tunnel file descriptor.
@@ -53,6 +54,7 @@ private extension Network.NWPath.Status {
 }
 
 public class LeafAdapater {
+    private let logger = os.Logger(subsystem: "com.xlnt.vpn", category: "Core")
     private static var sharedLeafAdapater: LeafAdapater = {
         return LeafAdapater()
     }()
@@ -83,6 +85,7 @@ public class LeafAdapater {
             var len = socklen_t(buf.count)
 
             if getsockopt(fd, 2 /* IGMP */, 2, &buf, &len) == 0 && String(cString: buf).hasPrefix("utun") {
+                logger.debug("fd \(fd, privacy: .public), buffer \(String(cString: buf), privacy: .public)")
                 return fd
             }
         }
@@ -172,11 +175,9 @@ public class LeafAdapater {
             let fm = FileManager.default
             let file = fm.leafConfFile
             var conf = file?.contents ?? ""
-            
             conf = conf
                 .replacingOccurrences(of: "{{leafLogFile}}", with: fm.leafLogFile?.path ?? "")
                 .replacingOccurrences(of: "{{tunFd}}", with: tunFd ?? "")
-
             try! conf.write(to: file!, atomically: true, encoding: .utf8)
 
             setenv("LOG_NO_COLOR", "true", 1)
