@@ -24,6 +24,11 @@ import os
 
         switch call.method {
         case "toggle":
+            // NSLog("asset path \(MGConstant.assetDirectory)")
+            // NSLog("home path \(MGConstant.homeDirectory)")
+            // NSLog("template path \(FileManager.default.leafConfTemplateFile!)")
+            // NSLog("dat path \(FileManager.default.leafSiteDataFile!)")
+            // NSLog("bundle path \(Bundle.main.bundleURL)")
             manager.loadVPNPreference() { error in
                 guard error == nil else {
                     fatalError("load VPN preference failed: \(error.debugDescription)")
@@ -70,11 +75,13 @@ import os
         case "getTunnelLog":
             let fm = FileManager.default
 
-            guard let conf = fm.leafLogFile?.contents else {
-                fatalError("get leaf log file contents fail")
+//            guard let conf = fm.leafLogFile?.contents else {
+//                fatalError("get leaf log file contents fail")
+//            }
+            guard let accessLog = fm.xrayErrorLogFile?.contents else {
+                fatalError("get xray log file contents fail")
             }
-            
-            result(conf)
+            result(accessLog)
             break
         case "getTunnelConfiguration":
             LeafAdapater.shared().getRuntimeConfiguration { conf in
@@ -102,6 +109,15 @@ import os
             LeafAdapater.shared().update(conf: conf) { error in
                 guard error == nil else {
                     fatalError("update tunnel failed: \(error.debugDescription)")
+                }
+            }
+        case "setXrayConfiguration":
+            guard let conf = call.arguments as? String else {
+                fatalError("call arguments is empty")
+            }
+            XrayAdapater.shared().setRuntimeConfiguration(outBound: conf) { error in
+                guard error == nil else {
+                    fatalError("set runtime configuration failed: \(error.debugDescription)")
                 }
             }
         default:

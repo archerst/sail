@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sail/adapters/leaf_ffi/config.dart';
+import 'package:sail/adapters/xray/config.dart' as XrayConf;
 import 'package:sail/channels/vpn_manager.dart';
 import 'package:sail/constant/app_colors.dart';
 import 'package:sail/constant/app_strings.dart';
@@ -17,6 +18,7 @@ class AppModel extends BaseModel {
   PageController pageController = PageController(initialPage: 0);
   String appTitle = AppStrings.appName;
   Config config = Config();
+  XrayConf.Outbound? xrayConf;
   ThemeData themeData = ThemeData(
     primarySwatch: AppColors.themeColor,
     visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -44,6 +46,25 @@ class AppModel extends BaseModel {
     config.general = general;
     config.proxies = proxies;
     config.rules = rules;
+
+    XrayConf.Mux mux = XrayConf.Mux(concurrency: 8,enabled: false);
+    XrayConf.TlsSettings tlsSettings = XrayConf.TlsSettings(alpn: ["h2", "http/1.1"],serverName: "excellentconnect.com",fingerprint: "ios");
+    XrayConf.TCPSettings tcpSettings = XrayConf.TCPSettings(header: XrayConf.TCPHeader(type: "none"));
+    XrayConf.StreamSettings streamSettings = XrayConf.StreamSettings(tlsSettings: tlsSettings, tcpSettings: tcpSettings, network: "tcp", security: "tls");
+
+    List<XrayConf.VlessServer> servers = [];
+    List<XrayConf.User> users = []; 
+
+    users.add(XrayConf.User(encryption: "none", id: "9f49c873-9e9c-4e6b-8f26-3f293c3455fc", level: 0, flow: "xtls-rprx-vision"));
+    servers.add(XrayConf.VlessServer(address: "45.78.76.163", port: 443, users: users));
+
+    XrayConf.OutboundSettings settings = XrayConf.OutboundSettings(vnext: servers);
+    xrayConf = XrayConf.Outbound(mux: mux, streamSetting: streamSettings, settings: settings);
+
+    print("-----------------xray outbound config-----------------");
+    print(xrayConf!.toJson());
+    print("-----------------xray outbound config-----------------");
+    setXrayOutbound(xrayConf!);
   }
 
   final Map _tabMap = {
@@ -189,5 +210,9 @@ class AppModel extends BaseModel {
     print("-----------------config-----------------");
 
     vpnManager.setTunnelConfiguration(config.toString());
+  }
+
+  void setXrayOutbound(XrayConf.Outbound outbound) async {
+    vpnManager.setXrayConfiguration(outbound.toJson());
   }
 }

@@ -98,4 +98,17 @@ class VpnManager {
     }
     return result;
   }
+  
+  Future<String> setXrayConfiguration(String conf) async {
+  // Native channel
+  const platform = MethodChannel("com.sail_tunnel.sail/vpn_manager");
+  String result;
+  try {
+    result = await platform.invokeMethod("setXrayConfiguration", conf);
+  } on PlatformException catch (e) {
+    print(e.toString());
+    rethrow;
+  }
+  return result;
+  }
 }

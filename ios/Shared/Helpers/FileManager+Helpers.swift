@@ -27,6 +27,17 @@ extension FileManager {
         sharedFolderURL?.appendingPathComponent("leaf.log")
     }
 
+    var xrayAccessLogFile: URL? {
+        sharedFolderURL?.appendingPathComponent("access.log")
+    }
+    var xrayErrorLogFile: URL? {
+        sharedFolderURL?.appendingPathComponent("error.log")
+    }
+    
+    var xrayConfFile: URL? {
+        sharedFolderURL?.appendingPathComponent("conf.json")
+    }
+
     var leafConfFile: URL? {
         sharedFolderURL?.appendingPathComponent("leaf.conf")
     }
@@ -36,6 +47,7 @@ extension FileManager {
     }
     
     var leafSiteDataFile: URL? {
-        Bundle.main.url(forResource: "site", withExtension: "dat", subdirectory: "Shared")
+//        Bundle.main.url(forResource: "site", withExtension: "dat", subdirectory: "Shared")
+        Bundle.main.url(forResource: "site", withExtension: "dat")
     }
 }
