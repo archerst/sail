@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:sail/constant/app_strings.dart';
 import 'package:sail/router/application.dart';
 import 'package:sail/router/routers.dart';
 import 'package:sail/utils/common_util.dart';
+import 'package:sail/utils/http_proxy.dart';
 import 'package:sail/utils/shared_preferences_util.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
@@ -12,6 +15,7 @@ class HttpUtil {
   static HttpUtil get instance => _httpUtil;
   static final HttpUtil _httpUtil = HttpUtil();
   late Dio dio;
+  late CustomHttpsProxy proxy;
 
   HttpUtil() {
     BaseOptions options = BaseOptions(
@@ -19,6 +23,22 @@ class HttpUtil {
       receiveTimeout: 10000,
     );
     dio = Dio(options);
+    proxy = CustomHttpsProxy(port: 14041);
+  
+    dio.httpClientAdapter = DefaultHttpClientAdapter()..onHttpClientCreate = (client) {
+      // Config the client.
+      client.findProxy = (uri) {
+        return "PROXY localhost:14041";
+    };
+      print("init proxy");
+      proxy.init();
+      //忽略证书
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      // You can also create a new HttpClient for Dio instead of returning,
+      // but a client must being returned here.
+      return client;
+    };
+
     dio.interceptors.add(InterceptorsWrapper(onRequest: (options, handler) async {
 
       //如果token存在在请求参数加上token
@@ -92,7 +112,7 @@ class HttpUtil {
       response = await dio.get(url);
     }
     print("get data: ${jsonDecode(response.data)['data']}");
-    return jsonDecode(response.data);
+    return response.data;
   }
 
   //post请求

@@ -1,6 +1,7 @@
 class AppStrings {
   static const String appName = 'Xlnt';
   static const String token = 'token';
+  static const String apiHostIP = 'apiHostIP';
   static const String authData = 'auth_data';
   static const String userInfo = 'USER_INFO';
   static const String userSubscribe = 'USER_SUBSCRIBE';

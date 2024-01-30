@@ -6,7 +6,7 @@ import 'package:sail/utils/http_util.dart';
 
 class UserService {
   Future<LoginEntity>? login(Map<String, dynamic> parameters) {
-    return HttpUtil.instance?.get(AppUrls.login, parameters: parameters).then((result) {
+    return HttpUtil.instance?.post(AppUrls.login, parameters: parameters).then((result) {
       return LoginEntity.fromMap(result['data']);
     });
   }
